@@ -1,5 +1,4 @@
 import Im from "immutable"
-import assign from "object-assign"
 import shallowEqual from "shallowequal"
 
 import camelCase from "lodash/camelCase"
@@ -85,7 +84,7 @@ export function objReduce(obj, fn) {
   return Object.keys(obj).reduce((newObj, key) => {
     let res = fn(obj[key], key)
     if(res && typeof res === "object")
-      assign(newObj, res)
+      Object.assign(newObj, res)
     return newObj
   }, {})
 }
@@ -558,4 +557,23 @@ export const btoa = (str) => {
   }
 
   return buffer.toString("base64")
+}
+
+export const sorters = {
+  operationsSorter: {
+    alpha: (a, b) => a.get("path").localeCompare(b.get("path")),
+    method: (a, b) => a.get("method").localeCompare(b.get("method"))
+  }
+}
+
+export const buildFormData = (data) => {
+  let formArr = []
+
+  for (let name in data) {
+    let val = data[name]
+    if (val !== undefined && val !== "") {
+      formArr.push([name, "=", encodeURIComponent(val).replace(/%20/g,"+")].join(""))
+    }
+  }
+  return formArr.join("&")
 }
